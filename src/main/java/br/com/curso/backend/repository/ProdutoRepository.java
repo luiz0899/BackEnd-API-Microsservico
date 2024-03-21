@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import br.com.curso.backend.entity.Produto;
+import br.com.curso.backend.exception.ResourceNotFoundException;
 
 @Repository
 public class ProdutoRepository {
@@ -52,7 +53,7 @@ public class ProdutoRepository {
 		Optional<Produto> produtoEncontrado = obterProdPorId(produto.getId());
 		
 		if (produtoEncontrado.isEmpty()) {
-			throw new InputMismatchException("produto não encontrado !");
+			throw new ResourceNotFoundException("produto não encontrado !");
 		}
 		
 		//deleta o produto.
