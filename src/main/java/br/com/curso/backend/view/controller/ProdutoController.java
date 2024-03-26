@@ -1,5 +1,5 @@
 
-package br.com.curso.backend.controller;
+package br.com.curso.backend.view.controller;
 
 import java.util.List;
 import java.util.Optional;
