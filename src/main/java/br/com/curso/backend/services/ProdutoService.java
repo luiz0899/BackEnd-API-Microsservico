@@ -49,34 +49,48 @@ public class ProdutoService {
 		return Optional.of(dto);
 	}
 	
-	public ProdutoDto adicionar(ProdutoDto produto ) {
-		return produtoRepository.save(produto);
+	public ProdutoDto adicionar(ProdutoDto produtoDto ) {
+		
+		// removendo id do dto
+		produtoDto.setId(null);
+		//criando objeto de mapeamento.
+		ModelMapper mapper =new ModelMapper();
+		//convertendo dto para um produto(entity)
+		Produto produto = mapper.map(produtoDto, Produto.class);
+		//salvar no banco
+		produto = produtoRepository.save(produto);
+		//retornando o id para o dto do produto salvo
+		produtoDto.setId(produto.getId());
+		//retornando dto salvo 
+		return produtoDto;
 	}
 	
 	public void deletar(Integer id ) {
+		
+		// verificar se produto existe
+		Optional<Produto> produto = produtoRepository.findById(id);
+		
+		//se não ouver produto , lança exception
+		if (produto.isEmpty()) {
+			throw new ResourceNotFoundException( "Produto com Id " + id + " não existe !!");
+		}
+		
 		produtoRepository.deleteById(id); 
 	}
 	
 	public ProdutoDto atualizar(Integer id, ProdutoDto produtoAtualizado) {
 	    
 		// Verificar se o produto com o ID fornecido existe no banco de dados
-	    Optional<ProdutoDto> produtoExistenteOptional = produtoRepository.findById(id);
+		produtoAtualizado.setId(id);
+		//criar objeto de mapeamento 
+	    ModelMapper mapper = new ModelMapper();
 	    
-	    if (produtoExistenteOptional.isPresent()) {
-	        Produto produtoExistente = produtoExistenteOptional.get();
-	        
-	        // Modificar os atributos do produto existente com base nos dados do produto atualizado
-	        produtoExistente.setNome(produtoAtualizado.getNome());
-	        produtoExistente.setQuantidade(produtoAtualizado.getQuantidade());
-	        produtoExistente.setValor(produtoAtualizado.getValor());
-	        produtoExistente.setObservacao(produtoAtualizado.getObservacao());
-	        
-	        // Salvar as alterações no banco de dados
-	        return produtoRepository.save(produtoExistente);
-	    } else {
-	        // Se o produto com o ID fornecido não existe, você pode lançar uma exceção ou lidar com isso de outra maneira, dependendo da lógica de negócios
-	        throw new IllegalArgumentException("Produto com o ID fornecido não encontrado: " + id);
-	    }
+	    Produto produto = mapper.map(produtoAtualizado, Produto.class);
+	    
+	    produtoRepository.save(produto);
+	    
+	    return produtoAtualizado ;
+	    
 	}
 	
 
